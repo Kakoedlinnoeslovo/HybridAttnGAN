@@ -14,5 +14,5 @@ More details you can see on the image below.
 <img src="framework.png" width="900px" height="350px" />
 
 This position is explained by the fact that ZSL GAN takes as input noisy text descriptions about an unseen class (e.g.Wikipedia articles) and can generates synthesized visual features for this class. 
-My position that we can train ZSL GAN on our dataset first, than get its Embedder (_netG in code) and train AttnGAN with them. This will allow us generation images from noisy descriptions. 
+My position we can train ZSL GAN first and use its Embedder (_netG in code) during training AttnGAN . This will allow us generation images from noisy descriptions. 
 To make it better I also added DenseEncoder after output of _netG. 
