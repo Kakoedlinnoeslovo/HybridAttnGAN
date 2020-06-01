@@ -20,11 +20,23 @@ class _netG(nn.Module):
                                   nn.Tanh())
 
     def forward(self, z, c):
-        c = c.float()
         rdc_text = self.rdc_text(c)
         input = torch.cat([z, rdc_text], 1)
         output = self.main(input)
         return output
+
+class DEncoder(nn.Module):
+    def __init__(self, indim, outdim):
+        super(DEncoder, self).__init__()
+        self.d1 = nn.Linear(indim, outdim)
+        self.d2 = nn.Linear(outdim, outdim)
+
+    def forward(self, x):
+        x = self.d1(x)
+        x = nn.LeakyReLU()(x)
+        x = self.d2(x)
+        x = nn.LeakyReLU()(x)
+        return x
 
 
 class _netD(nn.Module):

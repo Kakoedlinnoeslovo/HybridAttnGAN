@@ -71,7 +71,7 @@ class ResBlock(nn.Module):
         return out
 
 
-from models.modelsZSL import _netG
+from models.modelsZSL import _netG, DEncoder
 
 # ############## Text2Image Encoder-Decoder #######
 class RNN_ENCODER(nn.Module):
@@ -100,6 +100,7 @@ class RNN_ENCODER(nn.Module):
         #print("NTOKEN, NINPUT", self.ntoken, self.ninput)
 
         self.encoder_netG = _netG(self.vocab_size, self.ninput*cfg.TEXT.WORDS_NUM)
+        self.dense_encoder = DEncoder(self.ninput*cfg.TEXT.WORDS_NUM, self.ninput*cfg.TEXT.WORDS_NUM)
         #self.encoder = nn.Embedding(self.ntoken, self.ninput)
 
         self.drop = nn.Dropout(self.drop_prob)
@@ -156,10 +157,8 @@ class RNN_ENCODER(nn.Module):
         z = Variable(torch.randn(captions.shape[0], configs.z_dim))#.cuda()
 
         emb = self.encoder_netG(z, captions)
-        emb = torch.cat([x.unsqueeze(2) for x in torch.split(emb, cfg.TEXT.WORDS_NUM, dim=1)], dim=2)
-        #print(emb[0:10])
-        #emb = self.encoder(captions)
-        #print("EMB SHAPE: {}".format(emb.shape))
+        emb = self.dense_encoder(emb)
+        emb = torch.reshape(emb, (emb.shape[0], cfg.TEXT.WORDS_NUM, self.ninput))
         emb = self.drop(emb)
         #
         # Returns: a PackedSequence object
